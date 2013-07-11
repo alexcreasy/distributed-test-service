@@ -36,7 +36,7 @@ public class InvoiceManagerEJBImpl {
     @Resource
     private UserTransaction utx;
 
-    @EJB(lookup = "corbaname:iiop:localhost:3628#jts-quickstart/DummyEnlisterEJBImpl")
+    @EJB(lookup = "corbaname:iiop:localhost:3728#jts-quickstart/DummyEnlisterEJBImpl")
     private DummyEnlisterEJBHome dummyEnlisterHome;
 
     @Resource(mappedName = "java:/JmsXA")

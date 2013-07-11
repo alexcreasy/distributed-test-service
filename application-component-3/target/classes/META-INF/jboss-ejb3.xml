@@ -26,8 +26,8 @@
                impl-version="2.0">
     <assembly-descriptor>
         <iiop:iiop>
-            <ejb-name>InvoiceManagerEJBImpl</ejb-name>
-            <iiop:binding-name>jts-quickstart/InvoiceManagerEJBImpl</iiop:binding-name>
+            <ejb-name>DummyEnlisterEJBImpl</ejb-name>
+            <iiop:binding-name>jts-quickstart/DummyEnlisterEJBImpl</iiop:binding-name>
         </iiop:iiop>
     </assembly-descriptor>
 </jboss:ejb-jar>

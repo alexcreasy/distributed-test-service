@@ -21,7 +21,7 @@
     <artifactId>jboss-as-jts-application-component-2</artifactId>
     <name>JBoss AS Quickstarts: Java Transaction Service Application Component 2</name>
     <description>Using CMT with JTS</description>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
 
     <parent>
@@ -63,6 +63,12 @@
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.as.quickstarts</groupId>
+            <artifactId>jboss-as-jts-application-component-3</artifactId>
+            <version>7.1.2-SNAPSHOT</version>
+            <classifier>client</classifier>
         </dependency>
     </dependencies>
 
@@ -115,6 +121,16 @@
                         <clientExclude>**/*Impl.class</clientExclude>
                         <clientExclude>**/*MDB.class</clientExclude>
                     </clientExcludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${version.war.plugin}</version>
+                <configuration>
+                    <!-- Java EE 6 doesn't require web.xml, Maven needs to
+                        catch up! -->
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
         </plugins>
