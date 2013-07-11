@@ -42,7 +42,7 @@ public class CustomerManagerEJB {
     private EntityManager entityManager;
 
     @EJB(lookup = "corbaname:iiop:localhost:3628#jts-quickstart/InvoiceManagerEJBImpl")
-    private DummyEnlisterEJBHome invoiceManagerHome;
+    private InvoiceManagerEJBHome invoiceManagerHome;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void createCustomer(String name) throws RemoteException, JMSException {
@@ -51,7 +51,7 @@ public class CustomerManagerEJB {
         c1.setName(name);
         entityManager.persist(c1);
 
-        final DummyEnlisterEJB invoiceManager = invoiceManagerHome.create();
+        final InvoiceManagerEJB invoiceManager = invoiceManagerHome.create();
         invoiceManager.createInvoice(name);
     }
 
