@@ -84,7 +84,6 @@ public class InvoiceManagerEJBImpl {
             ASFailureSpec fault = new ASFailureSpec("fault", ASFailureMode.XAEXCEPTION, how, type);
 
             try {
-
                 transactionManager.getTransaction().enlistResource(new DummyXAResource(fault));
             } catch (RollbackException e) {
                 e.printStackTrace();
