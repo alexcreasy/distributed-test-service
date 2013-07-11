@@ -23,5 +23,5 @@ import javax.jms.JMSException;
 
 public interface DummyEnlisterEJB extends EJBObject {
 
-    public void createInvoice(String name) throws RemoteException, JMSException;
+    public void enlistDummy() throws RemoteException, JMSException;
 }

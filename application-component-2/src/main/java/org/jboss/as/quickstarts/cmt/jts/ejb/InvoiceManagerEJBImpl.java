@@ -26,6 +26,7 @@ import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.transaction.*;
+import java.rmi.RemoteException;
 
 @RemoteHome(InvoiceManagerEJBHome.class)
 @Stateless
@@ -34,6 +35,9 @@ public class InvoiceManagerEJBImpl {
 
     @Resource
     private UserTransaction utx;
+
+    @EJB(lookup = "corbaname:iiop:localhost:3628#jts-quickstart/DummyEnlisterEJBImpl")
+    private DummyEnlisterEJBHome dummyEnlisterHome;
 
     @Resource(mappedName = "java:/JmsXA")
     private ConnectionFactory connectionFactory;
@@ -44,7 +48,7 @@ public class InvoiceManagerEJBImpl {
     @Resource(lookup = "java:jboss/TransactionManager")
     private TransactionManager transactionManager;
 
-    public void createInvoice(String name) throws JMSException, SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+    public void createInvoice(String name) throws JMSException, SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException, RemoteException {
 
         utx.begin();
 
@@ -97,6 +101,10 @@ public class InvoiceManagerEJBImpl {
         message.setText("Created invoice for customer named: " + name);
         messageProducer.send(message);
         connection.close();
+
+
+        final DummyEnlisterEJB dummyEnlister = dummyEnlisterHome.create();
+        dummyEnlister.enlistDummy();
 
         if (":ROLLBACK".equalsIgnoreCase(name))
             utx.rollback();
