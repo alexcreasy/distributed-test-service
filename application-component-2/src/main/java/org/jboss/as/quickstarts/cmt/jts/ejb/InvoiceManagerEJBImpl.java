@@ -30,11 +30,7 @@ import java.rmi.RemoteException;
 
 @RemoteHome(InvoiceManagerEJBHome.class)
 @Stateless
-@TransactionManagement(TransactionManagementType.BEAN)
 public class InvoiceManagerEJBImpl {
-
-    @Resource
-    private UserTransaction utx;
 
     @EJB(lookup = "corbaname:iiop:localhost:3728#jts-quickstart/DummyEnlisterEJBImpl")
     private DummyEnlisterEJBHome dummyEnlisterHome;
@@ -48,9 +44,10 @@ public class InvoiceManagerEJBImpl {
     @Resource(lookup = "java:jboss/TransactionManager")
     private TransactionManager transactionManager;
 
-    public void createInvoice(String name) throws JMSException, SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException, RemoteException {
+    @TransactionAttribute(TransactionAttributeType.MANDATORY)
+    public void createInvoice(String name) throws JMSException, SystemException, NotSupportedException,
+            HeuristicRollbackException, HeuristicMixedException, RollbackException, RemoteException {
 
-        utx.begin();
 
         if (name.startsWith("fault:")) {
             if (transactionManager == null)
@@ -104,12 +101,5 @@ public class InvoiceManagerEJBImpl {
 
         final DummyEnlisterEJB dummyEnlister = dummyEnlisterHome.create();
         dummyEnlister.enlistDummy();
-
-        if (":ROLLBACK".equalsIgnoreCase(name))
-            utx.rollback();
-        else if (":ROLLBACKONLY".equalsIgnoreCase(name))
-            utx.setRollbackOnly();
-
-        utx.commit();
     }
 }

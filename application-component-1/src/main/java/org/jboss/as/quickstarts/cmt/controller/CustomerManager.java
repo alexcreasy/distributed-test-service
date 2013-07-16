@@ -17,6 +17,7 @@
 package org.jboss.as.quickstarts.cmt.controller;
 
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Logger;
 
 import javax.faces.bean.RequestScoped;
@@ -37,6 +38,12 @@ import org.jboss.as.quickstarts.cmt.model.Customer;
 public class CustomerManager {
     private Logger logger = Logger.getLogger(CustomerManager.class.getName());
 
+    public static final int DEFAULT_DEMO_NO_OF_CUSTOMERS = 10;
+    private static final int DEFAULT_FAILURE_RATE = 1; // No of chances in 10 that a transaction will fail.
+    public static final int DEFAULT_DELAY_IN_MILLIS = 500;
+    public static final int DEFAULT_NAME_LENGTH = 12;
+
+
     @Inject
     private CustomerManagerEJB customerManager;
 
@@ -46,13 +53,40 @@ public class CustomerManager {
     }
 
     public String addCustomer(String name) {
+
         try {
-            customerManager.createCustomer(name);
+            if (name.toUpperCase().startsWith("DEMO:"))
+                demo(name);
+            else
+                customerManager.createCustomer(name);
             return "customerAdded";
         } catch (Exception e) {
             logger.warning("Caught a duplicate: " + e.getMessage());
             // Transaction will be marked rollback only anyway utx.rollback();
             return "customerDuplicate";
         }
+    }
+
+    private void demo(String name) throws Exception {
+
+        String[] commands = name.split(":");
+        int noOfCustomers = commands.length > 1 ? Integer.parseInt(commands[1]) : DEFAULT_DEMO_NO_OF_CUSTOMERS;
+        int failureRate = commands.length > 2 ? Integer.parseInt(commands[2]) : DEFAULT_FAILURE_RATE;
+
+        for (int i = 0; i < noOfCustomers; i++) {
+            customerManager.createCustomer(randomName(DEFAULT_NAME_LENGTH));
+            Thread.sleep(DEFAULT_DELAY_IN_MILLIS);
+        }
+    }
+
+    private String randomName(int length) {
+        final String alpha = "abcdefghijklmnopqrstuvwxyz";
+        final Random rand = new Random();
+        final StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < length; i++)
+            sb.append(alpha.charAt(rand.nextInt(alpha.length())));
+
+        return sb.toString();
     }
 }
