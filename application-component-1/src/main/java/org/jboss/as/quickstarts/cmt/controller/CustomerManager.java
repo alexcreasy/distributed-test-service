@@ -31,6 +31,7 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 
 import org.jboss.as.quickstarts.cmt.jts.ejb.CustomerManagerEJB;
+import org.jboss.as.quickstarts.cmt.jts.ejb.Wedge;
 import org.jboss.as.quickstarts.cmt.model.Customer;
 
 @Named("customerManager")
@@ -39,13 +40,18 @@ public class CustomerManager {
     private Logger logger = Logger.getLogger(CustomerManager.class.getName());
 
     public static final int DEFAULT_DEMO_NO_OF_CUSTOMERS = 10;
-    private static final int DEFAULT_FAILURE_RATE = 1; // No of chances in 10 that a transaction will fail.
-    public static final int DEFAULT_DELAY_IN_MILLIS = 500;
+    public static final int DEFAULT_FAILURE_RATE = 1; // No of chances in 10 that a transaction will fail.
+    public static final int MAX_FAILURE_RATE = 10;
+    public static final int DEFAULT_DELAY_IN_MILLIS = 1000;
     public static final int DEFAULT_NAME_LENGTH = 12;
 
+    final Random rand = new Random();
 
     @Inject
     private CustomerManagerEJB customerManager;
+
+    @Inject
+    private Wedge wedge;
 
     public List<Customer> getCustomers() throws SecurityException, IllegalStateException, NamingException,
             NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
@@ -57,6 +63,8 @@ public class CustomerManager {
         try {
             if (name.toUpperCase().startsWith("DEMO:"))
                 demo(name);
+            else if (name.toUpperCase().startsWith("WEDGE:"))
+                wedge.wedgeTx();
             else
                 customerManager.createCustomer(name);
             return "customerAdded";
@@ -67,21 +75,45 @@ public class CustomerManager {
         }
     }
 
-    private void demo(String name) throws Exception {
+    private void demo(String name) {
 
         String[] commands = name.split(":");
         int noOfCustomers = commands.length > 1 ? Integer.parseInt(commands[1]) : DEFAULT_DEMO_NO_OF_CUSTOMERS;
         int failureRate = commands.length > 2 ? Integer.parseInt(commands[2]) : DEFAULT_FAILURE_RATE;
 
+        failureRate = failureRate <= MAX_FAILURE_RATE ? failureRate : MAX_FAILURE_RATE;
+        failureRate = failureRate >= 0 ? failureRate : 0;
+
         for (int i = 0; i < noOfCustomers; i++) {
-            customerManager.createCustomer(randomName(DEFAULT_NAME_LENGTH));
-            Thread.sleep(DEFAULT_DELAY_IN_MILLIS);
+            try {
+                if (rand.nextInt(MAX_FAILURE_RATE) < failureRate)
+                    doRandomFailure();
+                else
+                    customerManager.createCustomer(randomName(DEFAULT_NAME_LENGTH));
+
+                Thread.sleep(DEFAULT_DELAY_IN_MILLIS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void doRandomFailure() throws Exception {
+        doFailure(FailureType.values()[rand.nextInt(FailureType.values().length)]);
+    }
+
+    private void doFailure(FailureType type) throws Exception {
+        switch (type) {
+            case RM_PREPARE_FAILED:
+                customerManager.createCustomer("fault:PREPARE:XAER_RMERR");
+                break;
+            case RM_SLOW_COMMIT:
+                customerManager.createCustomer("slow:commit");
         }
     }
 
     private String randomName(int length) {
         final String alpha = "abcdefghijklmnopqrstuvwxyz";
-        final Random rand = new Random();
         final StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < length; i++)

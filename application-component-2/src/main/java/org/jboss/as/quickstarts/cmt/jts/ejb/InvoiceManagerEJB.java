@@ -24,4 +24,5 @@ import javax.jms.JMSException;
 public interface InvoiceManagerEJB extends EJBObject {
 
     public void createInvoice(String name) throws RemoteException, JMSException;
+
 }

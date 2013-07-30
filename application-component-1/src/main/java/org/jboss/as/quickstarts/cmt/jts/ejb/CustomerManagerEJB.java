@@ -34,6 +34,7 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 
 import org.jboss.as.quickstarts.cmt.model.Customer;
+import org.jboss.ejb3.annotation.TransactionTimeout;
 
 @Stateless
 public class CustomerManagerEJB {
@@ -72,5 +73,11 @@ public class CustomerManagerEJB {
     @SuppressWarnings("unchecked")
     public List<Customer> listCustomers() {
         return entityManager.createQuery("select c from Customer c").getResultList();
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    @TransactionTimeout(0)
+    public void createCustomerNoTimeout(String name) throws RemoteException {
+        invoiceManagerHome.wedgeTransaction();
     }
 }

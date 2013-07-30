@@ -16,8 +16,11 @@
  */
 package org.jboss.as.quickstarts.cmt.jts.ejb;
 
+import org.jboss.ejb3.annotation.TransactionTimeout;
+
 import javax.annotation.Resource;
 import javax.ejb.*;
+import javax.inject.Inject;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -48,6 +51,7 @@ public class InvoiceManagerEJBImpl {
     public void createInvoice(String name) throws JMSException, SystemException, NotSupportedException,
             HeuristicRollbackException, HeuristicMixedException, RollbackException, RemoteException {
 
+        final DummyEnlisterEJB dummyEnlister = dummyEnlisterHome.create();
 
         if (name.startsWith("fault:")) {
             if (transactionManager == null)
@@ -98,8 +102,6 @@ public class InvoiceManagerEJBImpl {
         messageProducer.send(message);
         connection.close();
 
-
-        final DummyEnlisterEJB dummyEnlister = dummyEnlisterHome.create();
         dummyEnlister.enlistDummy();
     }
 }

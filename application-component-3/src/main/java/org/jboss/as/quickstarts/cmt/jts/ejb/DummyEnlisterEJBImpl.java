@@ -18,13 +18,6 @@ package org.jboss.as.quickstarts.cmt.jts.ejb;
 
 import javax.annotation.Resource;
 import javax.ejb.*;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.MessageProducer;
-import javax.jms.Queue;
-import javax.jms.Session;
-import javax.jms.TextMessage;
 import javax.transaction.*;
 
 @RemoteHome(DummyEnlisterEJBHome.class)

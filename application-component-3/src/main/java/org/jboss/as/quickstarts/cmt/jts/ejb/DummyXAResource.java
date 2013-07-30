@@ -93,9 +93,9 @@ public class DummyXAResource implements Synchronization, XAResource, Serializabl
         sb.append("XAResourceWrapperImpl@").append(Integer.toHexString(System.identityHashCode(this)));
         sb.append(" pad=").append("false");
         sb.append(" overrideRmValue=").append("false");
-        sb.append(" productName=").append("Well Behaved Dummy Product");
+        sb.append(" productName=").append("Dummy Product");
         sb.append(" productVersion=").append("0.0.0");
-        sb.append(" jndiName=").append("java:/wbdummyProd");
+        sb.append(" jndiName=").append("java:/wbdummyProd4");
         sb.append("]");
 
         return sb.toString();
@@ -177,7 +177,19 @@ public class DummyXAResource implements Synchronization, XAResource, Serializabl
             }
     }
 
+
+    public void commit(Xid xid, boolean b, boolean slow) throws XAException {
+        if (slow) {
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     // XA Interface implementation
+
 
     public void commit(Xid xid, boolean b) throws XAException
     {

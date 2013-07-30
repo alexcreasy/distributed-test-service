@@ -23,5 +23,6 @@ import javax.ejb.EJBHome;
 public interface InvoiceManagerEJBHome extends EJBHome {
 
     public InvoiceManagerEJB create() throws RemoteException;
+    public void wedgeTransaction() throws RemoteException;
 
 }
