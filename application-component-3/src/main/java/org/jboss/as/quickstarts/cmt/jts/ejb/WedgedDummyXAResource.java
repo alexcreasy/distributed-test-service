@@ -10,18 +10,14 @@ import java.io.Serializable;
  * Date: 24/07/2013
  * Time: 18:36
  */
-public class SlowDummyXAResource implements XAResource, Serializable {
+public class WedgedDummyXAResource implements XAResource, Serializable {
 
-    public static final int COMMIT_DELAY = 60000;
+    public static final int COMMIT_DELAY = 12000000;
 
     private int timeout = 0;
 
     @Override
     public void commit(Xid xid, boolean b) throws XAException {
-        long endTime = System.currentTimeMillis() + COMMIT_DELAY;
-        while (System.currentTimeMillis() < endTime) {
-            // Testing
-        }
     }
 
     @Override
@@ -44,6 +40,11 @@ public class SlowDummyXAResource implements XAResource, Serializable {
 
     @Override
     public int prepare(Xid xid) throws XAException {
+        try {
+            Thread.sleep(COMMIT_DELAY);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return XA_OK;
     }
 
@@ -76,9 +77,9 @@ public class SlowDummyXAResource implements XAResource, Serializable {
         sb.append("XAResourceWrapperImpl@").append(Integer.toHexString(System.identityHashCode(this)));
         sb.append(" pad=").append("false");
         sb.append(" overrideRmValue=").append("false");
-        sb.append(" productName=").append("Slow Dummy Product");
+        sb.append(" productName=").append("Wedged Dummy Resource");
         sb.append(" productVersion=").append("0.0.0");
-        sb.append(" jndiName=").append("java:/SlowDummyProd4");
+        sb.append(" jndiName=").append("java:/WedgedDummyRes");
         sb.append("]");
 
         return sb.toString();

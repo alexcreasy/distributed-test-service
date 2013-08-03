@@ -23,6 +23,8 @@ import javax.jms.JMSException;
 
 public interface DummyEnlisterEJB extends EJBObject {
 
-    void enlistDummy() throws RemoteException, JMSException;
+    void enlistDummy() throws RemoteException;
+
+    void wedgeTransaction() throws RemoteException;
 
 }

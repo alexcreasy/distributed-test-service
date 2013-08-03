@@ -64,7 +64,7 @@ public class CustomerManager {
             if (name.toUpperCase().startsWith("DEMO:"))
                 demo(name);
             else if (name.toUpperCase().startsWith("WEDGE:"))
-                wedge.wedgeTx();
+                customerManager.distributedWedge(name);
             else
                 customerManager.createCustomer(name);
             return "customerAdded";
@@ -107,8 +107,6 @@ public class CustomerManager {
             case RM_PREPARE_FAILED:
                 customerManager.createCustomer("fault:PREPARE:XAER_RMERR");
                 break;
-            case RM_SLOW_COMMIT:
-                customerManager.createCustomer("slow:commit");
         }
     }
 

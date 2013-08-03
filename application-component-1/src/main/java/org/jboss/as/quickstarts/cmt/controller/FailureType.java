@@ -7,6 +7,6 @@ package org.jboss.as.quickstarts.cmt.controller;
  */
 public enum FailureType {
 
-    RM_PREPARE_FAILED, RM_SLOW_COMMIT
+    RM_PREPARE_FAILED
 
 }

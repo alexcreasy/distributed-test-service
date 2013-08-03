@@ -31,4 +31,10 @@ public class DummyEnlisterEJBImpl {
     public void enlistDummy() throws SystemException, RollbackException {
         transactionManager.getTransaction().enlistResource(new DummyXAResource());
     }
+
+    @TransactionAttribute(TransactionAttributeType.MANDATORY)
+    public void wedgeTransaction() throws SystemException, RollbackException {
+        transactionManager.getTransaction().enlistResource(new DummyXAResource());
+        transactionManager.getTransaction().enlistResource(new WedgedDummyXAResource());
+    }
 }

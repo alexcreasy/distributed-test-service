@@ -42,6 +42,10 @@ public class CustomerManagerEJB {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @EJB(lookup = "corbaname:iiop:localhost:3728#jts-quickstart/DummyEnlisterEJBImpl")
+    private DummyEnlisterEJBHome dummyEnlisterHome;
+
+
     @EJB(lookup = "corbaname:iiop:localhost:3628#jts-quickstart/InvoiceManagerEJBImpl")
     private InvoiceManagerEJBHome invoiceManagerHome;
 
@@ -76,8 +80,13 @@ public class CustomerManagerEJB {
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    @TransactionTimeout(0)
-    public void createCustomerNoTimeout(String name) throws RemoteException {
-        invoiceManagerHome.wedgeTransaction();
+    public void distributedWedge(String name) throws RemoteException {
+        Customer c1 = new Customer();
+        c1.setName(name);
+        entityManager.persist(c1);
+
+        final DummyEnlisterEJB dummyEnlister = dummyEnlisterHome.create();
+
+        dummyEnlister.wedgeTransaction();
     }
 }
